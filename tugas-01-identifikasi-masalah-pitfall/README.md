@@ -2,11 +2,10 @@
 
 # [Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
 
-| Nama                   | NIM            | Kontribusi                        |
-| ---------------------- | -------------- | --------------------------------- |
-| Dwi Surya Andika       | 103072400003   | saya mengerjakan pitfall bagian 1 |
-| krisna wahyudi pratama | [103072400048] | [saya mengerjakn pitfall 2]       |
-| [nama 3]               | [nim]          | [pitfall/bagian yang dikerjakan]  |
+| Nama                   | NIM            | Kontribusi                          |
+| ---------------------- | -------------- | ----------------------------------- |
+| Dwi Surya Andika       | 103072400003   | saya mengerjakan pitfall bagian 1&3 |
+| krisna wahyudi pratama | [103072400048] | saya mengerjakn pitfall 2&3         |
 
 ## Pitfall 1: The Network is Reliable — ditulis oleh Dwi Surya Andika
 
@@ -22,7 +21,7 @@
 
 ---
 
-## Pitfall 2:— ditulis oleh [krisna wahyudi pratama]
+## Pitfall 2:— ditulis oleh Latency is Zero krisna wahyudi pratama
 
 - **Bukti di skenario:**
   Tim engineering FoodGo mendesain alur transaksi secara sekuensial/beruntun (_synchronous chaining_), di mana service pesanan harus menunggu balasan satu per satu dari service stok, service promo, hingga service pembayaran secara langsung sebelum memberi kepastian ke pengguna.
@@ -40,9 +39,22 @@
 
 ---
 
-## Pitfall 3: [nama pitfall] — ditulis oleh [nama]
+### Pitfall 3: Bandwidth is Infinite — ditulis oleh krisna wahyudi pratama & Dwi Surya Andika
 
-(ulangi struktur di atas)
+- **Bukti di skenario:**
+  Aplikasi FoodGo mengembalikan seluruh detail data restoran, ulasan lengkap, hingga URL gambar beresolusi tinggi dalam satu _payload_ JSON raksasa tanpa pembatasan, padahal pengguna hanya melihat daftar nama restoran di halaman utama.
+
+- **Kenapa ini keliru:**
+  Kapasitas pemindahan data per detik (_bandwidth_) memiliki batas fisik. Mengasumsikan jaringan sanggup menampung transfer data tanpa batas akan menyebabkan _network congestion_ (penumpukan lalu lintas data) ketika trafik meningkat.
+
+- **Dampak ke FoodGo:**
+  Aplikasi terasa sangat berat dan lambat saat memuat halaman utama (_rendering lag_), kuota data seluler pengguna cepat habis, dan biaya _bandwidth_ infrastruktur _cloud_ FoodGo melonjak drastis saat jam sibuk.
+
+- **Solusi desain awal:**
+  Menerapkan **Pagination & Filtering** (mengambil data bertahap per halaman), menggunakan **DTO (Data Transfer Object)** agar respons API hanya berisi atribut yang diperlukan, serta mengompresi aset (menggunakan format WebP untuk gambar dan kompresi _Gzip/Brotli_ pada payload JSON).
+
+- **Trade-off:**
+  Proses kompresi data dan _parsing_ payload butuh konsumsi CPU tambahan di sisi _server_ maupun _smartphone_ pengguna. Penulisan kode di sisi _backend_ juga menjadi sedikit lebih kompleks karena harus membatasi struktur data API.
 
 ---
 
