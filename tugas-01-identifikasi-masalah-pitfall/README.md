@@ -2,10 +2,10 @@
 
 # [Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
 
-| Nama                   | NIM            | Kontribusi                          |
-| ---------------------- | -------------- | ----------------------------------- |
-| Dwi Surya Andika       | 103072400003   | saya mengerjakan pitfall bagian 1&3 |
-| krisna wahyudi pratama | [103072400048] | saya mengerjakn pitfall 2&3         |
+| Nama                   | NIM          | Kontribusi                          |
+| ---------------------- | ------------ | ----------------------------------- |
+| Dwi Surya Andika       | 103072400003 | saya mengerjakan pitfall bagian 1&3 |
+| krisna wahyudi pratama | 103072400048 | saya mengerjakn pitfall 2&3         |
 
 ## Pitfall 1: The Network is Reliable — ditulis oleh Dwi Surya Andika
 
@@ -21,7 +21,7 @@
 
 ---
 
-## Pitfall 2:— ditulis oleh Latency is Zero krisna wahyudi pratama
+## Pitfall 2:Latency is Zero ditulis oleh krisna wahyudi pratama
 
 - **Bukti di skenario:**
   Tim engineering FoodGo mendesain alur transaksi secara sekuensial/beruntun (_synchronous chaining_), di mana service pesanan harus menunggu balasan satu per satu dari service stok, service promo, hingga service pembayaran secara langsung sebelum memberi kepastian ke pengguna.
