@@ -24,7 +24,23 @@
 
 ## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
 
-(ulangi struktur di atas)
+### Pitfall 2: Latency is Zero — ditulis oleh [Nama Teman]
+
+* **Bukti di skenario:** 
+  Tim engineering FoodGo mendesain alur transaksi secara sekuensial/beruntun (*synchronous chaining*), di mana service pesanan harus menunggu balasan satu per satu dari service stok, service promo, hingga service pembayaran secara langsung sebelum memberi kepastian ke pengguna.
+
+* **Kenapa ini keliru:** 
+  Pemanggilan fungsi di dalam memori satu komputer (*in-memory call*) memang terjadi dalam hitungan nanodetik. Namun, pemanggilan *service* melalui jaringan selalu membutuhkan waktu transit (*network latency* / *Round Trip Time*). Menganggap latensi jaringan itu nol ms adalah kekeliruan besar karena setiap pemanggilan jaringan tambahan akan terus menambah waktu tunggu secara kumulatif.
+
+* **Dampak ke FoodGo:** 
+  Waktu respons aplikasi membengkak secara signifikan (*high response time*). Ketika trafik meningkat di jam makan siang, penumpukan latensi dari banyak *service* menyebabkan aplikasi pengguna mengalami *loading* sangat lama (*laggy*), bahkan memicu *request timeout* pada aplikasi seluler pengguna padahal *server* tidak dalam kondisi mati.
+
+* **Solusi desain awal:** 
+  Mengubah arsitektur dari *synchronous/blocking* menjadi **Asynchronous Communication** berbasis *Message Queue* (seperti RabbitMQ atau Apache Kafka) untuk alur yang tidak membutuhkan jawaban instan (seperti pengiriman notifikasi dan kalkulasi poin). Selain itu, memanfaatkan **Caching** (seperti Redis) agar *service* tidak perlu melakukan pemanggilan jaringan berulang untuk data yang jarang berubah seperti promo.
+
+* **Trade-off:** 
+  Penerapan komunikasi *asynchronous* mengubah sifat konsistensi data menjadi **Eventual Consistency** (data tidak langsung berbarui di seluruh *service* pada milidetik yang sama). Hal ini juga meningkatkan kompleksitas arsitektur, sehingga proses *debugging* dan penelusuran *error* (*distributed tracing*) membutuhkan usaha ekstra.
+
 
 ---
 
