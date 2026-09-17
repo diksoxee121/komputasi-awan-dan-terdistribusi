@@ -5,8 +5,8 @@
 | Nama                      | NIM            | Kontribusi                       |
 | ------------------------- | -------------- | -------------------------------- |
 | [nama 1]                  | [nim]          | [pitfall/bagian yang dikerjakan] |
-| [krisna wahyuydi pratama] | [103072400048] | [saya mengerjakan pitfall 2.]     |
-| [nama 3]               | [nim]          | [pitfall/bagian yang dikerjakan] |
+| [krisna wahyuydi pratama] | [103072400048] | [saya mengerjakan pitfall 2]    |
+| [nama 3]                  | [nim]          | [pitfall/bagian yang dikerjakan] |
 
 ## Pitfall 1: [nama pitfall] — ditulis oleh [nama]
 
@@ -24,7 +24,7 @@
 
 ## Pitfall 2: [nama pitfall] — ditulis oleh [nama]
 
-(ulangi struktur di atas)
+(ulangi struktur di atas).......
 
 ---
 
