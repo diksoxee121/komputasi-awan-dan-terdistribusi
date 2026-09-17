@@ -2,10 +2,10 @@
 
 > Isi jurnal ini selama proses diskusi berlangsung, bukan ditulis ulang rapi di akhir. Tulis dengan gaya bebas — poin diskusi, kebuntuan, perubahan pikiran.
 
-## [Tanggal diskusi 1]
-- Peserta: [nama-nama yang hadir]
-- Poin diskusi: ...
-- Perbedaan pendapat (jika ada): ...
+## [Diskusi 1 tanggal 17 september hari kamis ]
+- Peserta: [Dwi Surya Andika, Krisna Wahyudi Pratama]
+- Poin diskusi: kami berdiskusi sangaat lama karena belum memahami alur kerja dan cara penggunaan github ini jadi masih meraba raba dan terbata bata dalam melakukan pengerjaan tugas ini 
+- Perbedaan pendapat (jika ada): kami saling beradu argumen tentang cara pakai github ini karena merasa tidak sinkron dalam commit dan push nya masih bingung 
 
 ## [Tanggal diskusi 2]
 - ...

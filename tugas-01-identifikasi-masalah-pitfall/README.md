@@ -36,4 +36,9 @@
 
 ## Kesimpulan Kelompok
 
-[Ringkasan: jika FoodGo memperbaiki ketiga pitfall ini, apa arsitektur yang disarankan secara garis besar? Kaitkan dengan Tugas 2.]
+Ringkasan: Berdasarkan analisis terhadap studi kasus FoodGo, kegagalan sistem saat jam sibuk bukan disebabkan oleh kesalahan logika bisnis, melainkan akibat mengabaikan realitas infrastruktur jaringan (*Fallacies of Distributed Computing*). Mengasumsikan jaringan selalu andal dan latensi bernilai nol menyebabkan arsitektur sistem menjadi sangat rapuh (*fragile*) terhadap gangguan minor.
+
+### Rekomendasi Strategis untuk Tim FoodGo:
+1. **Penerapan *Resilience Patterns*:** Wajib menerapkan *Retry Mechanism* dengan *Exponential Backoff & Jitter* serta *Circuit Breaker* pada setiap pemanggilan antar-*service* untuk mencegah *cascading failure* dan *retry storm*.
+2. **Migrasi ke *Asynchronous Architecture*:** Mengubah alur pemanggilan sekuensial yang saling menunggu (*blocking*) menjadi berbasis *event/message queue* (seperti RabbitMQ/Kafka) untuk proses non-kritis seperti notifikasi dan sistem poin.
+3. **Pemanfaatan *Caching* & *Distributed Tracing*:** Menggunakan Redis untuk memangkas *network latency* pada data yang sering diakses, serta memasang *Distributed Tracing* (seperti Jaeger/Zipkin) agar titik kemacetan jaringan (*bottleneck*) dapat terdeteksi secara *real-time*.
