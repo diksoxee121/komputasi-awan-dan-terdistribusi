@@ -2,11 +2,11 @@
 
 **Kelompok:** [nama kelompok]
 
-| Nama | NIM | Kontribusi |
-|---|---|---|
-| [nama 1] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 2] | [nim] | [pitfall/bagian yang dikerjakan] |
-| [nama 3] | [nim] | [pitfall/bagian yang dikerjakan] |
+| Nama                      | NIM            | Kontribusi                       |
+| ------------------------- | -------------- | -------------------------------- |
+| [nama 1]                  | [nim]          | [pitfall/bagian yang dikerjakan] |
+| [krisna wahyuydi pratama] | [103072400048] | [saya mengerjakan pitfall 2]     |
+| [nama 3]                  | [nim]          | [pitfall/bagian yang dikerjakan] |
 
 ## Pitfall 1: [nama pitfall] — ditulis oleh [nama]
 
