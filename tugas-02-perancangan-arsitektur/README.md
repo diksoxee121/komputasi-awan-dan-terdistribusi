@@ -1,57 +1,65 @@
-# Tugas 2 (Pekan 2) — Perancangan Arsitektur untuk FoodGo
+# Tugas 2 — Perancangan Arsitektur FoodGo
+**Anggota:**
+1. Dwi Surya Andika (103072400003) - : Merancang Diagram & Skenario
+2. [Nama Teman 1] ([NIM]) - : Analisis Trade-off
+3. [Nama Teman 2] ([NIM]) - : Justifikasi Arsitektur
 
-**Materi terkait:** Architectural style (Layered, SOA, Peer-to-Peer, Publish-Subscribe).
+---
 
-## Studi Kasus
+## 1. Pemilihan Gaya Arsitektur & Justifikasi
+Kami memilih menggunakan **Kombinasi Service-Oriented Architecture (SOA) dan Publish-Subscribe (Pub-Sub)**. 
 
-Melanjutkan Tugas 1: FoodGo butuh sistem yang **decoupled** agar tim kurir dan tim resto tidak saling mengganggu ketika salah satu modul diperbarui/deploy ulang. Saat ini semua modul (pesanan, pembayaran, notifikasi kurir, katalog resto) berjalan sebagai satu aplikasi monolitik — sekali deploy, semua modul ikut restart dan berisiko downtime total.
+**Justifikasinya:** 
+Tidak semua proses di FoodGo harus ditunggu secara langsung (sinkron). Proses krusial seperti pembuatan pesanan dan pengecekan pembayaran butuh kepastian instan, sehingga lebih cocok memakai gaya **SOA** (komunikasi sinkron lewat HTTP/REST). Namun, untuk urusan meneruskan informasi ke pihak resto dan mencari kurir, pelanggan tidak perlu menunggu *loading* di aplikasi sampai kurir didapat. Oleh karena itu, kami memisahkan modul Kurir dan Resto menggunakan gaya **Pub-Sub** (komunikasi asinkron lewat Message Broker) agar sistem benar-benar *decoupled* (terpisah dan tidak saling mengunci).
 
-## Tugas Kelompok
+---
 
-1. Pilih **satu** gaya arsitektur utama: **Service-Oriented Architecture (SOA)** atau **Publish-Subscribe**. Boleh dikombinasikan (mis. SOA untuk service inti + Pub-Sub untuk notifikasi), tapi harus dijustifikasi kenapa kombinasi ini yang dipilih.
-2. Gambarkan minimal 4 komponen berikut dan interaksinya: modul Pesanan, modul Pembayaran, modul Kurir/Notifikasi, modul Katalog Resto (dan message broker/API gateway jika relevan).
-3. Jelaskan alur satu skenario penuh secara end-to-end di diagram (misalnya: pelanggan buat pesanan → bayar → resto terima notifikasi → kurir ditugaskan) — tunjukkan komponen mana berkomunikasi dengan siapa, dan **jenis komunikasinya** (sinkron/asinkron, request-response/event).
-4. Analisis tertulis: kenapa gaya ini mengatasi masalah *coupling* dari Tugas 1, dan apa trade-off-nya (mis. Pub-Sub menambah kompleksitas debugging karena alur tidak linear).
+## 2. Diagram Arsitektur FoodGo
 
-## Cara Membuat Diagram (Gratis, Cukup Laptop)
-
-Tidak perlu software berbayar. Dua opsi:
-
-**Opsi A — Mermaid di dalam Markdown (disarankan).** Ditulis sebagai teks biasa di `README.md`, otomatis dirender jadi diagram oleh GitHub — tidak perlu install apa pun.
-
-````markdown
 ```mermaid
 graph LR
-  Client[Pelanggan] -->|HTTP request pesan| OrderSvc[Service Pesanan]
-  OrderSvc -->|RPC sinkron| PaymentSvc[Service Pembayaran]
-  OrderSvc -->|publish event OrderCreated| Broker[(Message Broker)]
-  Broker -->|subscribe| NotifSvc[Service Notifikasi Kurir]
-  Broker -->|subscribe| RestoSvc[Service Katalog Resto]
-```
-````
+    Client[Aplikasi Pelanggan] -->|HTTP Request| API[API Gateway]
+    
+    API -->|1. Create Order| OrderSvc[Modul Pesanan]
+    OrderSvc -->|2. Cek Bayar| PaySvc[Modul Pembayaran]
+    
+    OrderSvc -->|3. Publish Event: 'Order_Paid'| Broker[(Message Broker / RabbitMQ)]
+    
+    Broker -->|4. Subscribe| RestoSvc[Modul Katalog Resto]
+    Broker -->|4. Subscribe| CourierSvc[Modul Kurir & Notifikasi]
+    
+    classDef core fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef async fill:#bbf,stroke:#333,stroke-width:2px;
+    
+    class OrderSvc,PaySvc core;
+    class RestoSvc,CourierSvc async;
+ ```
 
-**Opsi B — draw.io / diagrams.net** (gratis, jalan di browser tanpa akun, atau app desktop offline di [app.diagrams.net](https://app.diagrams.net/)). Ekspor sebagai `.png` dan simpan di folder `diagram/`.
+ ---
 
-## Struktur Submission
+## 3. Penjelasan Skenario End-to-End
+Berdasarkan diagram di atas, berikut adalah alur ketika pelanggan memesan makanan:
 
-```
-tugas-02-perancangan-arsitektur/
-├── README.md          # Analisis + diagram Mermaid (jika Opsi A) atau referensi ke diagram/
-├── JURNAL.md
-└── diagram/            # File .png/.drawio jika pakai Opsi B
-```
+1. **Membuat Pesanan (Sinkron):** Pelanggan menekan tombol "Pesan". Aplikasi mengirim HTTP Request ke *API Gateway*, yang meneruskannya ke **Modul Pesanan**. 
+2. **Pembayaran (Sinkron):** Modul Pesanan langsung nge-*hit* API **Modul Pembayaran** untuk memotong saldo (*Request-Response*). Jika sukses, status pesanan menjadi "Dibayar".
+3. **Publish Event (Asinkron):** Setelah dibayar, Modul Pesanan menerbitkan *event* `Order_Paid` ke **Message Broker**. Aplikasi pelanggan sudah bisa menampilkan layar "Pesanan diproses" tanpa *loading* lama.
+4. **Subscribe & Eksekusi (Asinkron):** 
+   - **Modul Katalog Resto** menangkap event tersebut dan memunculkan notifikasi di resto untuk mulai memasak.
+   - **Modul Kurir** juga menangkap event itu dan mulai mencari *driver* terdekat secara otomatis di latar belakang.
 
-## Rubrik Penilaian (Tugas 2)
+---
 
-| Komponen | Bobot | Kriteria |
-|---|---|---|
-| Ketepatan pemilihan gaya arsitektur | 20% | Justifikasi SOA/Pub-Sub sesuai kebutuhan *decoupling* di skenario |
-| Kelengkapan & kejelasan diagram | 30% | Semua komponen kunci ada, jenis komunikasi (sinkron/asinkron) jelas ditandai |
-| Analisis trade-off | 30% | Bukan hanya kelebihan — kekurangan/kompleksitas baru juga dibahas |
-| Proses & kontribusi kelompok | 20% | `JURNAL.md`, commit history |
+## 4. Analisis Trade-Off
 
-## Batasan Penggunaan AI (Level 2)
+**Mengatasi Masalah Coupling (Tugas 1):**
+Sekarang tim bisa melakukan *deploy* ulang atau perbaikan pada Modul Kurir tanpa takut merusak fitur Pesanan. Jika Modul Kurir *down*, event `Order_Paid` tetap aman tersimpan di dalam Message Broker.
 
-Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh memakai AI untuk brainstorming komponen apa saja yang umum ada di gaya arsitektur SOA/Pub-Sub; **tidak boleh** meminta AI menggambar diagram final atau menuliskan analisis trade-off yang tinggal ditempel. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
+**Kelemahan & Kompleksitas Baru (Trade-off):**
+1. **Debugging Lebih Kompleks:** Karena alur terputus oleh Message Broker (non-linear), jika ada masalah, pelacakan log harus dilakukan di tiga tempat berbeda (Modul Pesanan, Broker, dan Modul Resto).
+2. **Eventual Consistency:** Ada potensi jeda waktu (delay). Status di pelanggan mungkin sudah "Dibayar", tapi tablet resto baru berbunyi beberapa detik kemudian karena antrean Message Broker.
 
-- Diagram Mermaid/draw.io yang "terlalu generik" (identik dengan contoh tutorial di internet tanpa penyesuaian ke kasus FoodGo) akan dinilai rendah pada komponen kelengkapan & kejelasan diagram.
+
+
+
+
+    
