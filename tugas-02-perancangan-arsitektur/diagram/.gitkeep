@@ -1,0 +1,16 @@
+graph LR
+    Client[Aplikasi Pelanggan] -->|HTTP Request| API[API Gateway]
+    
+    API -->|1. Create Order| OrderSvc[Modul Pesanan]
+    OrderSvc -->|2. Cek Bayar| PaySvc[Modul Pembayaran]
+    
+    OrderSvc -->|3. Publish Event: 'Order_Paid'| Broker[(Message Broker / RabbitMQ)]
+    
+    Broker -->|4. Subscribe| RestoSvc[Modul Katalog Resto]
+    Broker -->|4. Subscribe| CourierSvc[Modul Kurir & Notifikasi]
+    
+    classDef core fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef async fill:#bbf,stroke:#333,stroke-width:2px;
+    
+    class OrderSvc,PaySvc core;
+    class RestoSvc,CourierSvc async;
