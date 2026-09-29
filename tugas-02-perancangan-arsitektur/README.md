@@ -4,7 +4,7 @@
 
 1. Dwi Surya Andika (103072400003) - : Merancang Diagram & Skenario
 2. Krisna Wahyudi Pratama (103072400048) - : Analisis Trade-off
-3. [Nama Teman 2] ([NIM]) - : Justifikasi Arsitektur
+3. [Rizqi Rahmatullah] (103072400018) - : Justifikasi Arsitektur
 
 ---
 
