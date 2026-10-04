@@ -1,68 +1,41 @@
-# Tugas 3 (Pekan 3) — Efisiensi Proses & Kontainer
+# Tugas 3 — Efisiensi Proses & Kontainer FoodGo
 
-**Materi terkait:** Threading, Virtualization, Containers.
+**Kelompok:** [Isi Nama Kelompok]  
+**Anggota:**  
+1. Dwi Surya Andika (103072400003) - [Bagian Pengerjaan mencoba menguji data di docker dan juga di vscode apakah berhasil atau tidak]  
+2. [Nama Teman 1] ([NIM]) - [Bagian Pengerjaan]  
+3. [Nama Teman 2] ([NIM]) - [Bagian Pengerjaan]  
 
-## Studi Kasus
+---
 
-Server FoodGo boros sumber daya karena setiap permintaan pesanan masuk diproses sebagai **proses baru yang berat** (mis. `fork()` proses OS penuh per request). Saat 100 pesanan masuk bersamaan, server kehabisan memori karena tiap proses membawa overhead-nya sendiri.
+## 1. Analisis Race Condition & Solusi Lock
 
-## Tugas Kelompok
+### Masalah Race Condition (Tanpa Lock)
+Ketika 100 pesanan diproses oleh 10 *thread* secara bersamaan tanpa proteksi, terjadi fenomena **Race Condition** pada variabel global `processed_count`. 
 
-1. Implementasikan **simulasi pesanan masuk** di Python (`src/order_simulator.py`) yang memproses banyak pesanan **secara konkuren memakai multithreading** (bukan multiprocessing, bukan sekuensial biasa).
-2. Program harus mensimulasikan **race condition yang sengaja dibuat lalu diperbaiki** — buktikan pemahaman kalian tentang `Lock`/sinkronisasi dengan cara:
-   - Jalankan dulu versi TANPA lock, tunjukkan hasil counter yang salah (screenshot/log).
-   - Perbaiki dengan `threading.Lock()`, tunjukkan hasil counter yang benar.
-   - Tulis perbandingan ini di `JURNAL.md`.
-3. Paketkan program ke dalam **Docker container** (`Dockerfile` disediakan skeleton-nya, lengkapi bagian yang kosong).
-4. Jalankan container di laptop, buktikan program tetap berjalan benar di dalam container (screenshot/video di `bukti/`).
+Di tingkat prosesor, operasi `processed_count += 1` terdiri dari 3 langkah:
+1. Membaca nilai `processed_count` saat ini dari memori.
+2. Menambahkan nilai tersebut dengan 1.
+3. Menyimpan kembali nilai baru ke memori.
 
-## Skeleton yang Disediakan
+Tanpa adanya sinkronisasi, dua atau lebih *thread* bisa membaca nilai yang sama secara serentak (misalnya nilai 20). Kedua *thread* memproses pesanannya masing-masing, lalu sama-sama menyimpan nilai 21 ke memori. Akibatnya, terjadi *lost update* (satu hitungan hilang), sehingga hasil akhir pesanan yang terhitung sering bernilai di bawah 100 (misalnya 88 atau 93).
 
-- `src/order_simulator.py` — kerangka program dengan `# TODO` di bagian logika inti (worker function, penggunaan lock, agregasi hasil). **Kalian wajib mengisi bagian TODO sendiri** — ini bagian penilaian utama.
-- `requirements.txt` — kosong/minimal (program ini sengaja hanya pakai standard library Python, tidak perlu dependency eksternal).
-- `Dockerfile` — kerangka dengan beberapa baris `# TODO`, lengkapi agar image bisa di-build dan dijalankan.
+### Solusi Sinkronisasi (`threading.Lock()`)
+Untuk membenahi masalah ini, kami menggunakan objek `threading.Lock()` dengan blok `with lock:`. Mekanisme ini menjamin **Mutual Exclusion**, yaitu aturan di mana hanya ada 1 *thread* yang boleh mengeksekusi operasi penambahan angka pada satu waktu. *Thread* lain yang ingin mengakses variabel harus mengantre hingga *thread* sebelumnya melepaskan kunci. Hasilnya, perhitungan selalu konsisten bernilai tepat **100**.
 
-## Cara Menjalankan (Setelah Skeleton Dilengkapi)
+---
 
-Tanpa Docker (langsung di laptop, untuk debugging cepat):
+## 2. Mengapa Multithreading, Bukan Proses OS / Multiprocessing?
+
+Pada studi kasus FoodGo, server mengalami *out of memory* karena setiap pesanan baru diproses dengan **membuat proses OS penuh (misalnya `fork()`)**.
+
+* **Proses OS (Multiprocessing):** Setiap proses memiliki ruang memori terpisah (*isolated memory*). Jika ada 100 pesanan masuk bersamaan, sistem harus mengalokasikan RAM dan *overhead* CPU baru sebanyak 100 kali. Hal ini sangat boros sumber daya.
+* **Multithreading:** Semua *thread* berjalan di dalam **satu proses yang sama** dan berbagi ruang memori (*shared memory*). Membuat 100 *thread* jauh lebih ringan (*lightweight*) daripada 100 proses OS, sehingga konsumsi RAM server FoodGo tetap hemat dan tidak berisiko *crash*.
+
+---
+
+## 3. Cara Menjalankan Aplikasi
+
+### Menjalankan Langsung di Laptop
 ```bash
-cd tugas-03-multithreading-container
 python3 src/order_simulator.py
-```
-
-Dengan Docker (wajib untuk submission akhir):
-```bash
-cd tugas-03-multithreading-container
-docker build -t foodgo-order-sim .
-docker run --rm foodgo-order-sim
-```
-
-## Struktur Submission
-
-```
-tugas-03-multithreading-container/
-├── README.md          # Analisis: race condition, perbaikan, kenapa threading (bukan multiprocessing/proses OS)
-├── JURNAL.md           # Log sebelum/sesudah lock, error yang ditemui saat build Docker
-├── Dockerfile
-├── requirements.txt
-├── src/
-│   └── order_simulator.py
-└── bukti/              # Screenshot/video: hasil counter salah (tanpa lock), hasil benar (dengan lock), container jalan
-```
-
-## Rubrik Penilaian (Tugas 3)
-
-| Komponen | Bobot | Kriteria |
-|---|---|---|
-| Implementasi multithreading benar | 30% | Worker benar-benar konkuren (bukan `time.sleep` yang menyamarkan sekuensial), pakai `threading` |
-| Bukti race condition & perbaikan lock | 25% | Ada bukti nyata (log/screenshot) sebelum & sesudah, bukan cuma klaim di teks |
-| Dockerfile & eksekusi container | 20% | Image ter-build, container jalan dan hasilkan output yang sama seperti tanpa Docker |
-| Analisis (kenapa threading, bukan proses berat) | 15% | Mengaitkan balik ke masalah "server boros resource" di studi kasus |
-| Proses & kontribusi kelompok | 10% | `JURNAL.md`, commit history |
-
-## Batasan Penggunaan AI (Level 2)
-
-Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya ke AI soal opsi umum menangani race condition (mis. "apa saja cara sinkronisasi thread di Python"); **tidak boleh** meminta AI menuliskan isi bagian `# TODO` di `order_simulator.py`/`Dockerfile`. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
-
-- Bagian `# TODO` di `order_simulator.py` dan `Dockerfile` sengaja dikosongkan — solusi yang identik persis antar kelompok (termasuk nama variabel, komentar) akan diperiksa lebih lanjut.
-- `JURNAL.md` wajib menunjukkan bukti nyata percobaan **sebelum** (race condition muncul) dan **sesudah** (`Lock()` dipasang) — bukan cuma klaim tanpa data pembanding.
