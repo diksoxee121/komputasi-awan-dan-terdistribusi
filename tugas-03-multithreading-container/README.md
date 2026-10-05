@@ -3,7 +3,7 @@
 **Kelompok:** [Isi Nama Kelompok]  
 **Anggota:**  
 1. Dwi Surya Andika (103072400003) - [Bagian Pengerjaan mencoba menguji data di docker dan juga di vscode apakah berhasil atau tidak]  
-2. [Nama Teman 1] ([NIM]) - [Bagian Pengerjaan]  
+2. Krisna Wahyudi Pratama (103072400048) - [## 1. Analisis Race Condition & Solusi Lock]  
 3. [Nama Teman 2] ([NIM]) - [Bagian Pengerjaan]  
 
 ---
