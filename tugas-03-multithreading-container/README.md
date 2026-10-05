@@ -4,7 +4,7 @@
 **Anggota:**  
 1. Dwi Surya Andika (103072400003) - [Bagian Pengerjaan mencoba menguji data di docker dan juga di vscode apakah berhasil atau tidak]  
 2. Krisna Wahyudi Pratama (103072400048) - [1. Analisis Race Condition & Solusi Lock]  
-3. [Nama Teman 2] ([NIM]) - [Bagian Pengerjaan]  
+3. Rizqi Rahmatullah (103072400018) - [Mengerjakan kode implementasi multithreading, membuat thread untuk memproses pesanan, dan menerapkan Lock]  
 
 ---
 
