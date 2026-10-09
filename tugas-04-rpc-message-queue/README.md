@@ -1,5 +1,11 @@
 # Laporan Tugas 4 — Komunikasi Antar Komponen (RPC & Message Queue)
 
+**Kelompok:** [Isi Nama Kelompok]  
+**Anggota:**  
+1. Dwi Surya Andika (103072400003) - [implementasi dan pengujian RPC.]  
+2. Krisna Wahyudi Pratama (103072400048) - [analisis konsep dan alasan pemilihan pola komunikasi]  
+3. Rizqi Rahmatullah (103072400018) - [implementasi RabbitMQ dan pembuktian bahwa pesan tidak hilang saat consumer mati.]  
+
 ## 1. Analisis Pola Komunikasi
 * **Jalur A (RPC - Sinkron):** Cocok untuk operasi `cek_saldo` dan `proses_pembayaran` karena modul Pesanan memerlukan respons seketika (*real-time*) untuk memastikan transaksi valid sebelum melanjutkan alur pesanan.
 * **Jalur B (Message Queue - Asinkron):** Cocok untuk notifikasi modul Kurir. Modul Pembayaran hanya mengirimkan event `pembayaran_berhasil` ke antrean tanpa harus menunggu modul Kurir selesai memprosesnya.
