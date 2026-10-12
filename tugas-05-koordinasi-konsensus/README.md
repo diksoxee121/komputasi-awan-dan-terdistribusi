@@ -1,5 +1,5 @@
 # Laporan Tugas 5 — Koordinasi & Konsensus (Bully Algorithm)
-**Kelompok:** [Isi Nama Kelompok]  
+**Kelompok:**   
 **Anggota:**  
 1. Dwi Surya Andika (103072400003) menguji saat state sedang normal dan juga saat sedang dimatikan    
 2. Krisna Wahyudi Pratama (103072400048) Menganalisis Trade-off: Bully vs Raft
