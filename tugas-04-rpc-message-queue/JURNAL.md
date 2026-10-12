@@ -5,8 +5,8 @@
 - **Alasan:** Mengeksplorasi kedua mekanisme komunikasi (sinkron dan asinkron) secara penuh untuk memahami kelebihan dan risiko penerapannya pada arsitektur microservices FoodGo.
 
 ## Kendala Teknis
-- Memastikan port `5672` dan `15672` pada Docker Container RabbitMQ tidak terblokir firewall lokal.
-- Penyesuaian skema serialisasi JSON saat mengirim payload data dictionary dari Publisher ke Consumer.
+- Memastikan firewall lokal tidak memblokir port 5672 dan 15672 pada kontainer Docker RabbitMQ.
+- Menyesuaikan skema serialisasi JSON untuk pengiriman payload bertipe data dictionary dari Publisher ke Consumer.
 
 ## Uji "Pesan Tidak Hilang" (Khusus Jalur B)
 - **Langkah Uji:**
