@@ -3,7 +3,7 @@
 **Anggota:**  
 1. Dwi Surya Andika (103072400003) menguji saat state sedang normal dan juga saat sedang dimatikan    
 2. Krisna Wahyudi Pratama (103072400048) Menganalisis Trade-off: Bully vs Raft
-3. Rizqi Rahmatullah (103072400018) 
+3. Rizqi Rahmatullah (103072400018) Implementasi Bully Algorithm pada src/node.py, termasuk sinkronisasi thread menggunakan threading.Event() untuk menangani balasan pesan OK dalam proses pemilihan leader (start_election()) serta membantu mekanisme pemilihan dan pergantian leader secara otomatis.
 ## 1. Kenapa Sistem Membutuhkan Leader?
 Dalam arsitektur terdistribusi seperti FoodGo, pemrosesan pesanan membutuhkan satu pengelola terpusat (*Node Leader*) untuk mengatur urutan antrean transaksi secara konsisten. Jika tidak ada leader, beberapa server dapat mencatat konflik urutan waktu atau melakukan pemrosesan ganda (*double processing*) pada pesanan yang sama.
 
