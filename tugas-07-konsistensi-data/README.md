@@ -5,7 +5,7 @@
 
 1. Dwi Surya Andika (103072400003) Analisis Model Konsistensi pada Kasus Saldo E-Wallet FoodGo
 2. Krisna Wahyudi Pratama (103072400048) Sequence Diagram (Mermaid)
-3. Rizqi Rahmatullah (103072400018) Analisis: Skenario Tambahan (Diluar Studi Kasus Utama)
+3. Rizqi Rahmatullah (103072400018) Analisis: Skenario Tambahan
 
 ## 1. Analisis Model Konsistensi pada Kasus Saldo E-Wallet FoodGo
 
