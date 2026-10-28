@@ -1,5 +1,9 @@
 # Laporan Tugas 6 — Penamaan & Resolusi Lokasi (Chord DHT)
-
+**Kelompok:**   
+**Anggota:**  
+1. Dwi Surya Andika (103072400003) Penelusuran Manual `lookup()` untuk Salah Satu Contoh Kurir 
+2. Krisna Wahyudi Pratama (103072400048) Diagram Ring Topology (Mermaid)
+3. Rizqi Rahmatullah (103072400018) Analisis: Kenapa DHT/Chord Lebih Cocok Dibanding Flat Naming & DNS Konvensional?
 ## 1. Analisis: Kenapa DHT/Chord Lebih Cocok Dibanding Flat Naming & DNS Konvensional?
 * **Dibanding Flat Naming Sederhana (Tabel Pusat):** Flat naming menggunakan basis data pusat atau direktori tunggal untuk memetakan ID Kurir ke IP. Jika server pusat down (*single point of failure*), seluruh sistem pelacakan kurir lumpuh. Chord DHT menggunakan struktur terdesentralisasi berbasis *consistent hashing* tanpa server pusat, sehingga tahan terhadap kegagalan node.
 * **Dibanding DNS Konvensional:** DNS dirancang untuk entitas yang relatif statis dengan masa *Time-To-Live* (TTL) cache yang lama. Alamat IP kurir FoodGo sangat dinamis (sering berpindah jaringan seluler/Wi-Fi). Mengandalkan DNS konvensional akan menyebabkan latensi tinggi karena propagasi pembaruan record DNS, sedangkan Chord DHT mendistribusikan pembaruan secara langsung dan cepat di dalam ring identifier.
