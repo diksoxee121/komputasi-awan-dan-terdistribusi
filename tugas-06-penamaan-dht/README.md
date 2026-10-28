@@ -23,3 +23,6 @@ graph TD
         N2 -.-> K2[kurir-001]
         N3 -.-> K3[kurir-002]
     end
+```
+4. Perilaku Saat Node Keluar (Leave)
+Ketika sebuah node keluar dari ring (misal node-jakarta-1), seluruh kunci data (mapping) yang sebelumnya dikelola oleh node tersebut secara otomatis dialihkan dan diambil alih oleh node successor terdekat berikutnya berdasarkan aturan struktur ring melingkar Chord, sehingga data pemetaan ID kurir tetap aman dan dapat diakses melalui node lain yang masih aktif.
