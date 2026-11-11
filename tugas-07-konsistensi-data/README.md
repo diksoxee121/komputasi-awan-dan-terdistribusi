@@ -9,9 +9,11 @@
 
 ## 1. Analisis Model Konsistensi pada Kasus Saldo E-Wallet FoodGo
 
-- **Kenapa Eventual Consistency Saja Tidak Cukup?**
-  Eventual consistency hanya menjamin bahwa seluruh replika akan konvergen (menjadi sama) pada suatu saat di masa depan jika tidak ada update baru. Dalam konteks finansial/transaksi e-wallet FoodGo, jeda waktu sementara (_stale data_) berdampak langsung pada kegagalan bisnis (transaksi pesanan ditolak padahal pelanggan baru saja _top-up_). Hal ini merusak pengalaman pengguna (_user experience_) secara krusial.
-- **Kebutuhan Pendekatan:** Oleh karena itu, dibutuhkan model **Client-Centric Consistency**, khususnya jaminan **Read-Your-Writes**, di mana setelah klien melakukan pembaruan (seperti _top-up_ di server Jakarta), pembacaan berikutnya oleh klien yang sama (meskipun melalui server lain seperti Bandung) dijamin melihat hasil pembaruan tersebut atau versi yang lebih baru.
+Keterbatasan Eventual Consistency
+Eventual consistency hanya menjamin data akan sinkron di seluruh server pada akhirnya. Pada layanan finansial atau e-wallet seperti FoodGo, jeda sinkronisasi data ini bisa berakibat buruk pada bisnis. Pelanggan bisa mendapati transaksi pesanannya ditolak padahal baru saja mengisi saldo, yang tentunya sangat mengganggu pengalaman pengguna.
+
+Pendekatan yang Dibutuhkan
+Solusinya adalah menerapkan Client-Centric Consistency, khususnya prinsip Read-Your-Writes. Dengan metode ini, setelah pelanggan melakukan aksi seperti top-up di server utama (Jakarta), sistem menjamin pembacaan data berikutnya oleh pelanggan tersebut—bahkan saat ditangani server regional lain (Bandung)—akan langsung menampilkan nilai pembaruan paling aktual.
 
 ## 2. Skenario Tambahan (Diluar Studi Kasus Utama)
 
