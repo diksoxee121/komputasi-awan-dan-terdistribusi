@@ -1,44 +1,49 @@
-# Tugas 9 (Pekan 9) — Cloud Delivery & Deployment Model
+# Tugas 9 — Cloud Delivery & Deployment Model (Sistem Data Kependudukan)
 
-**Materi terkait:** Karakteristik esensial cloud computing (NIST SP 800-145), Deployment Model (Public/Private/Hybrid/Community), Service Model (IaaS/PaaS/SaaS).
+## 1. Rekomendasi Deployment Model: Hybrid Cloud
 
-> Bagian 2 mata kuliah ini murni **analisis & desain di atas kertas** — tidak ada biaya cloud sama sekali, karena tugas berhenti di tahap rekomendasi, bukan implementasi nyata (implementasi baru mulai Tugas 11).
+Untuk Sistem Data Kependudukan yang memuat data sensitif warga negara (NIK, alamat, data biometrik) sesuai amanat UU Perlindungan Data Pribadi (UU PDP), melayani ribuan instansi (Dukcapil daerah, kepolisian, perbankan untuk KYC), serta menghadapi lonjakan trafik musiman (pemilu dan pendaftaran sekolah), **Hybrid Cloud** merupakan pilihan paling tepat.
 
-## Studi Kasus
+Pendekatan ini memisahkan **zona privat / terkelola penuh oleh negara** (untuk penyimpanan basis data inti kependudukan dan biometrik dengan kendali akses ketat) dari **zona elastis / terdistribusi** (untuk menangani lonjakan beban antrean API verifikasi dan layanan non-sensitif).
 
-Pemerintah ingin membangun **Sistem Data Kependudukan** (nama, NIK, alamat, data biometrik) yang:
-- Sangat **rahasia** (data pribadi warga negara, diatur UU Perlindungan Data Pribadi).
-- Diakses oleh **ribuan instansi** (dukcapil daerah, kepolisian, bank untuk verifikasi KYC) dengan pola akses yang **tidak rata** (lonjakan saat musim pemilu/pendaftaran sekolah).
-- Butuh **skalabilitas** agar tidak downtime saat lonjakan akses, tapi **tidak boleh** datanya berada di infrastruktur yang tidak terkendali penuh oleh negara.
+Keterkaitan dengan **5 karakteristik esensial NIST (SP 800-145)**:
+* **On-demand self-service:** Penyediaan instance komputasi atau antrean layanan verifikasi dapat dinaikkan secara mandiri oleh tim teknis saat musim pemilu atau PPDB tanpa menunggu proses pengadaan perangkat keras fisik yang berbulan-bulan.
+* **Broad network access:** Ribuan instansi seperti Dukcapil daerah, kepolisian, dan bank dapat terhubung ke layanan verifikasi secara aman melalui jaringan terenkripsi dan standar API resmi dari berbagai lokasi.
+* **Resource pooling:** Sumber daya komputasi dan penyimpanan di lapisan layanan/API dapat dibagi pakai secara efisien dengan isolasi antar-instansi (*tenant*) yang ketat, sementara basis data biometrik tetap berada pada pool privat khusus negara.
+* **Rapid elasticity:** Saat terjadi lonjakan permintaan verifikasi secara tiba-tiba (misalnya saat masa pendaftaran sekolah atau hari pemungutan suara), kapasitas layanan dapat bertambah cepat dan kembali menyusut saat trafik normal agar tidak boros sumber daya.
+* **Measured service:** Setiap panggilan API, volume kueri, dan penggunaan sumber daya oleh tiap instansi dapat diukur dan dicatat secara otomatis untuk keperluan *audit trail*, pembatasan kuota (*rate limiting*), serta akuntabilitas akses data kependudukan.
 
-## Tugas Kelompok
+---
 
-1. **Rekomendasikan Deployment Model** (Public / Private / Hybrid / Community Cloud) yang paling tepat untuk sistem ini. Jelaskan alasannya berdasarkan **karakteristik NIST** (on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service) dikaitkan dengan kebutuhan kerahasiaan vs skalabilitas.
-2. **Rekomendasikan Service Model** (IaaS / PaaS / SaaS) yang tepat untuk komponen-komponen berbeda dari sistem ini (boleh berbeda service model untuk komponen berbeda, mis. database inti vs portal publik untuk pengecekan status).
-3. Jelaskan **minimal 2 risiko spesifik** dari pilihan kalian dan mitigasinya (mis. jika Hybrid Cloud dipilih: risiko sinkronisasi data antara private & public segment).
-4. Bandingkan singkat dengan **satu alternatif yang kalian tolak** — kenapa alternatif itu kurang tepat (mis. kenapa Public Cloud murni ditolak, atau kenapa Private Cloud murni dianggap kurang skalabel).
+## 2. Rekomendasi Service Model per Komponen Sistem
 
-## Struktur Submission
+Karena kebutuhan kontrol dan keamanan tiap bagian sistem berbeda, model layanan dipetakan per komponen:
 
-```
-tugas-09-cloud-delivery-deployment/
-├── README.md      # Analisis lengkap (isi dengan poin 1-4 di atas)
-├── JURNAL.md
-└── bukti/          # (opsional) diagram pendukung
-```
+* **Basis Data Inti Kependudukan & Biometrik -> IaaS (di lingkungan privat/terkontrol negara):** Data NIK dan biometrik bersifat sensitif dan permanen sehingga negara perlu memegang kendali penuh atas sistem operasi, konfigurasi jaringan, manajemen kunci enkripsi (*key management*), serta kebijakan retensi dan audit akses sesuai UU PDP.
+* **API Gateway, Layanan Verifikasi (KYC/Status) & Portal Layanan -> PaaS:** Tim pengembang dapat fokus pada logika aplikasi, autentikasi instansi, *auto-scaling*, dan *load balancing* saat lonjakan trafik tanpa direpotkan oleh pemeliharaan OS dasar secara manual.
+* **Layanan Pendukung Internal (Monitoring, Ticketing, Administrasi Operasional) -> SaaS (khusus data non-sensitif):** Untuk kebutuhan operasional internal yang tidak memuat data biometrik mentah maupun data pribadi sensitif warga, pemanfaatan SaaS dapat mempercepat operasional selama aksesnya dibatasi dan diawasi ketat.
 
-## Rubrik Penilaian (Tugas 9)
+---
 
-| Komponen | Bobot | Kriteria |
-|---|---|---|
-| Ketepatan rekomendasi deployment model | 30% | Argumen berbasis karakteristik NIST, bukan sekadar "private cloud lebih aman" tanpa detail |
-| Ketepatan rekomendasi service model | 25% | Pemetaan komponen sistem ke IaaS/PaaS/SaaS masuk akal |
-| Analisis risiko & mitigasi | 25% | Risiko spesifik ke konteks data kependudukan (bukan risiko generik) |
-| Perbandingan dengan alternatif yang ditolak | 20% | Argumen penolakan jelas dan berdasar |
+## 3. Risiko Spesifik & Mitigasi
 
-## Batasan Penggunaan AI (Level 2)
+1. **Sinkronisasi & Inkonsistensi Data Antar Segmen (Privat vs Lapisan Layanan):**
+   * **Risiko:** Jika terjadi pembaruan data kependudukan (misalnya perubahan status atau blokir/pemutakhiran data) di basis data inti privat namun replikasi/sinkronisasi ke lapisan layanan verifikasi terlambat, instansi pengguna seperti bank bisa menerima status data yang belum mutakhir saat proses KYC.
+   * **Mitigasi:** Terapkan aliran sinkronisasi terkontrol berbasis *event* dengan penanda versi/*timestamp*, validasi kesegaran data pada titik verifikasi kritis, serta mekanisme *retry* dan *dead-letter queue* bila sinkronisasi tertunda.
 
-Kebijakan **Level 2 (AI Assisted Idea Generation & Structuring)** berlaku — lihat [`../RUBRIK-UMUM.md`](../RUBRIK-UMUM.md). Boleh bertanya ke AI gambaran umum karakteristik NIST/deployment model untuk brainstorming; **tidak boleh** meminta AI menuliskan rekomendasi/analisis akhir yang tinggal ditempel ke `README.md`. Catat pemakaian AI di "Log Penggunaan AI" pada `JURNAL.md`.
+2. **Kebocoran atau Penyalahgunaan Data Pribadi & Biometrik Lintas Integrasi Instansi:**
+   * **Risiko:** Data biometrik dan identitas kependudukan tidak bisa diganti seperti kata sandi apabila bocor; celah konfigurasi API atau akses berlebih dari instansi pihak ketiga dapat memicu pelanggaran UU PDP dan kerugian sosial.
+   * **Mitigasi:** Terapkan enkripsi *in-transit* (TLS) dan *at-rest*, prinsip *least privilege* per instansi, respons verifikasi minimal (misalnya cukup mengembalikan status cocok/tidak cocok atau token terverifikasi alih-alih mengekspos seluruh data mentah bila tidak diperlukan), serta pencatatan log audit yang tidak mudah diubah.
 
-- Jawaban yang terasa seperti "template" (bisa dipakai untuk sistem cloud apa saja tanpa menyebut spesifik kependudukan/data pribadi/regulasi) akan dinilai rendah pada komponen ketepatan rekomendasi.
-- `README.md` wajib membahas minimal satu skenario tandingan yang kalian buat sendiri (mis. "bagaimana jika instansi daerah tidak punya infrastruktur private cloud sendiri?") beserta jawabannya.
+---
+
+## 4. Perbandingan dengan Alternatif yang Ditolak
+
+* **Alternatif yang ditolak: Public Cloud Murni.** Meski sangat unggul dalam elastisitas dan kemudahan skala saat lonjakan pemilu atau pendaftaran sekolah, menempatkan seluruh sistem dan basis data kependudukan/biometrik murni di infrastruktur publik berisiko dari sisi kedaulatan dan kendali penuh negara atas data sensitif warga serta kepatuhan ketat terhadap regulasi perlindungan data pribadi.
+
+---
+
+## 5. Skenario Tandingan
+
+* **Skenario:** *Bagaimana jika sejumlah instansi daerah atau kantor layanan kecil tidak memiliki infrastruktur private cloud maupun koneksi jaringan khusus yang memadai untuk terhubung langsung ke simpul privat?*
+* **Jawaban:** Instansi daerah tidak perlu membangun *private cloud* sendiri. Mereka dapat mengakses layanan melalui *API gateway* atau portal web resmi yang diamankan dengan *Mutual TLS (mTLS)*, *token/credential* berlapis, pembatasan IP/perangkat, serta *rate limiting* terpusat—sehingga tetap dapat terlayani secara merata tanpa menurunkan standar keamanan basis data inti di sisi pusat.
