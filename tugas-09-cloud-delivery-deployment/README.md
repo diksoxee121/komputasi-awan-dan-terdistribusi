@@ -1,4 +1,8 @@
 # Tugas 9 — Cloud Delivery & Deployment Model (Sistem Data Kependudukan)
+1. Dwi Surya Andika (103072400003) ## 3. Risiko Spesifik & Mitigasi
+2. Krisna Wahyudi Pratama (103072400048) ## 1. Rekomendasi Deployment Model: Hybrid Cloud
+3. Rizqi Rahmatullah (103072400018) ## 2. Rekomendasi Service Model per Komponen Sistem
+
 
 ## 1. Rekomendasi Deployment Model: Hybrid Cloud
 
